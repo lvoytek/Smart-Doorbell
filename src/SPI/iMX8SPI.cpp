@@ -28,3 +28,51 @@
 
 #include "iMX8SPI.h"
 #include "iMX8.h"
+
+#include "fsl_dspi.h"
+
+#define TRANSFER_BAUDRATE 500000U
+
+void iMX8SPI::init(PIN csPin, unsigned int frequency, int settings)
+{
+	dspi_master_config_t masterConfig;
+
+	masterConfig.whichCtar								  = kDSPI_Ctar0;
+	masterConfig.ctarConfig.baudRate					  = TRANSFER_BAUDRATE;
+	masterConfig.ctarConfig.bitsPerFrame				  = 8U;
+	masterConfig.ctarConfig.cpol						  = kDSPI_ClockPolarityActiveHigh;
+	masterConfig.ctarConfig.cpha						  = kDSPI_ClockPhaseFirstEdge;
+	masterConfig.ctarConfig.direction					  = kDSPI_MsbFirst;
+	masterConfig.ctarConfig.pcsToSckDelayInNanoSec		  = 1000000000U / TRANSFER_BAUDRATE;
+	masterConfig.ctarConfig.lastSckToPcsDelayInNanoSec	  = 1000000000U / TRANSFER_BAUDRATE;
+	masterConfig.ctarConfig.betweenTransferDelayInNanoSec = 1000000000U / TRANSFER_BAUDRATE;
+
+	masterConfig.whichPcs			= kDSPI_Pcs0;
+	masterConfig.pcsActiveHighOrLow = kDSPI_PcsActiveLow;
+
+	masterConfig.enableContinuousSCK		= false;
+	masterConfig.enableRxFifoOverWrite		= false;
+	masterConfig.enableModifiedTimingFormat = false;
+	masterConfig.samplePoint				= kDSPI_SckToSin0Clock;
+
+	DSPI_MasterInit(SPI2, &masterConfig, frequency);
+}
+
+char iMX8SPI::spiTransfer(char toSend)
+{
+	char received;
+	DSPI_MasterTransferNonBlocking(SPI2, &toSend, &received);
+	return received;
+}
+
+short iMX8SPI::spiTransfer16(short toSend)
+{
+	short rec;
+	rec = this->spiTransfer((toSend & 0xFF00) >> 8);	// send data MSB first
+	rec = (rec << 8) | this->spiTransfer(toSend & 0xFF);
+	return rec;
+}
+
+void iMX8SPI::csHigh() { this->gpioDriver.digitalWrite(this->csPin, GPIO_HIGH); }
+
+void iMX8SPI::csLow() { this->gpioDriver.digitalWrite(this->csPin, GPIO_LOW); }

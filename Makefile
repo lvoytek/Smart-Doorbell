@@ -95,14 +95,13 @@ install:
 	install -m 644 $(OUTDIR)/libI2C.so $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(OUTDIR)/libGPIO.so $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(OUTDIR)/libTimer.so $(DESTDIR)$(PREFIX)/lib/
-	install -m 644 $(OUTDIR)/libBoard.so $(DESTDIR)$(PREFIX)/lib/
 	install -d $(DESTDIR)$(PREFIX)/include/
-	install -m 644 $(OUTDIR)/include/$(BOARD).h $(DESTDIR)$(PREFIX)/include/
-	install -m 644 $(OUTDIR)/include/$(BOARD)SPI.h $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(OUTDIR)/include/Debug.h $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(OUTDIR)/include/SPIDriver.h $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(OUTDIR)/include/Camera.h $(DESTDIR)$(PREFIX)/include/
-	install -m 644 $(OUTDIR)/include/$(BOARD)I2C.h $(DESTDIR)$(PREFIX)/include/
-	install -m 644 $(OUTDIR)/include/$(BOARD)GPIO.h $(DESTDIR)$(PREFIX)/include/
-	install -m 644 $(OUTDIR)/include/$(BOARD)Timer.h $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(OUTDIR)/include/I2CDriver.h $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(OUTDIR)/include/GPIODriver.h $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(OUTDIR)/include/Timer.h $(DESTDIR)$(PREFIX)/include/
 	install -d $(DESTDIR)$(PREFIX)/bin/
 	install -m 644 $(OUTDIR)/smart-doorbell $(DESTDIR)$(PREFIX)/bin/
 

@@ -27,6 +27,8 @@
  * Plus OV5642 Camera
  */
 
+#include <stdio.h>
+
 #include "Debug.h"
 #include "I2CDriver.h"
 #include "SPIDriver.h"
@@ -441,6 +443,25 @@ void Camera_single_capture()
 	setFIFOBurst();
 
 	while((count--) > 0) { read_buffer[i++] = SPI_transfer(0); }
+}
+
+/**
+ * Save the most recent camera capture to a given file
+ * @param filename the name of the file to save to
+ */
+void Camera_save_capture_to_file(const char * filename)
+{
+	FILE * output_file = fopen(filename, "w");
+
+	if(output_file == NULL)
+	{
+		ERROR_PRINTLN("Failed to open %50s", filename);
+		return;
+	}
+
+	fwrite(read_buffer, sizeof(char), current_jpeg_buffer_size, output_file);
+
+	if(fclose(output_file) < 0) { ERROR_PRINTLN("Failed to close the image file"); }
 }
 
 /**

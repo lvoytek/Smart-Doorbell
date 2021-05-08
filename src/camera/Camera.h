@@ -246,5 +246,6 @@ void Camera_set_sharpness_type(SHARPNESS_TYPE sharpness);
 void Camera_reset_firmware();
 void Camera_single_capture();
 void Camera_start_capture();
+void Camera_save_capture_to_file(const char * filename);
 
 #endif

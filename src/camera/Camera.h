@@ -233,7 +233,7 @@ enum FRAMERATE_DETECT
 	FRAMERATE_AUTO_DETECT
 };
 
-void Camera_init(int i2c_bus, int spi_bus);
+void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs);
 void Camera_shutdown();
 
 void Camera_set_image_format(IMAGE_TYPE img_format);

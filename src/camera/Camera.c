@@ -73,12 +73,12 @@ int current_jpeg_buffer_size;
  * @param i2c_bus The I2C bus number
  * @param spi_bus The SPI bus number
  */
-void Camera_init(int i2c_bus, int spi_bus)
+void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 {
 	format = IMG_JPEG;
 
 	I2C_init(i2c_bus, 0x78);
-	SPI_init(spi_bus, 8000000);
+	SPI_init(spi_bus, spi_cs, 8000000);
 
 	// Check for Camera until SPI exists
 	while(1)

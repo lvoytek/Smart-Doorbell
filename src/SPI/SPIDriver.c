@@ -50,12 +50,12 @@ struct spi_ioc_transfer xfer;
  * @param spi_bus The SPI bus number
  * @param frequency The clock frequency in Hz
  */
-void SPI_init(int spi_bus, unsigned int frequency)
+void SPI_init(unsigned int spi_bus, unsigned int spi_cs, unsigned int frequency)
 {
 	__u8 bits_per_word = 8;
 	__u8 mode		   = SPI_MODE_0;
 
-	snprintf(spi_filename, 19, "/dev/spidev0.%d", spi_bus);
+	snprintf(spi_filename, 19, "/dev/spidev%u.%u", spi_bus, spi_cs);
 	spi_file = open(spi_filename, O_RDWR);
 
 	if(spi_file < 0)

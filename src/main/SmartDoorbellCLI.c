@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
  */
 void * camera_thread_handler(void * arg)
 {
-	Camera_init(1, 1, 0);
+	Camera_init(2, 1, 0);
 	Camera_single_capture();
 	Camera_shutdown();
 

@@ -103,7 +103,7 @@ unsigned char SPI_transfer(unsigned char toSend)
 	rx_buf[0] = 0;
 	xfer.len  = 1;
 
-	if(ioctl(spi_file, SPI_IOC_MESSAGE(1), xfer) < 0)
+	if(ioctl(spi_file, SPI_IOC_MESSAGE(1), &xfer) < 0)
 	{
 		ERROR_PRINTLN("SPI single byte transfer failed");
 		return 0;
@@ -128,7 +128,7 @@ unsigned short SPI_transfer16(unsigned short toSend)
 
 	xfer.len = 2;
 
-	if(ioctl(spi_file, SPI_IOC_MESSAGE(2), xfer) < 0)
+	if(ioctl(spi_file, SPI_IOC_MESSAGE(2), &xfer) < 0)
 	{
 		ERROR_PRINTLN("SPI 2 byte transfer failed");
 		return 0;

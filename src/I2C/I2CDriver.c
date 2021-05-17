@@ -78,9 +78,30 @@ void I2C_shutdown()
  */
 void I2C_write(unsigned char data)
 {
-	if(i2c_file < 0) { ERROR_PRINTLN("I2C unavailable"); }
+	if(i2c_file < 0)
+	{
+		ERROR_PRINTLN("I2C unavailable");
+		return;
+	}
 
 	int err = i2c_smbus_write_byte(i2c_file, data);
+	if(err < 0) { ERROR_PRINTLN("I2C Write Failed: 0x%hx, return %d", data, err); }
+}
+
+/**
+ * Write 2 bytes of data sequentially to the I2C bus
+ * @param data The bytes of data to write
+ */
+void I2C_write16(unsigned short data)
+{
+	if(i2c_file < 0)
+	{
+		ERROR_PRINTLN("I2C unavailable");
+		return;
+	}
+
+	i2c_smbus_write_byte(i2c_file, data >> 8);
+	int err = i2c_smbus_write_byte(i2c_file, data & 0xFF);
 	if(err < 0) { ERROR_PRINTLN("I2C Write Failed: 0x%hx, return %d", data, err); }
 }
 

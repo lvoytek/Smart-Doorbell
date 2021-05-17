@@ -111,10 +111,12 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 		if(vid != 0x56 || pid != 0x42)
 		{
 			ERROR_PRINTLN("Camera I2C unavailable: vid = 0x%x, pid = 0x%x", vid, pid);
+			Timer_delay_ms(1000);
 		}
 		else
 		{
 			DEBUG_PRINTLN("Camera I2C online.");
+			break;
 		}
 	}
 
@@ -625,9 +627,7 @@ void rdSensorReg8_8(unsigned char regID, unsigned char * regDat)
 void wrSensorReg16_8(int regID, int regDat)
 {
 	Timer_delay_us(10);
-	I2C_write((regID >> 8) & 0xFF);
-	Timer_delay_us(10);
-	I2C_write(regID & 0xFF);
+	I2C_write16(regID);
 	Timer_delay_us(10);
 	I2C_write(regDat);
 	Timer_delay_us(10);
@@ -664,9 +664,7 @@ void wrSensorRegs16_8(const struct sensor_reg reglist[])
 void rdSensorReg16_8(unsigned int regID, unsigned char * regDat)
 {
 	Timer_delay_us(10);
-	I2C_write((regID >> 8) & 0xFF);
-	Timer_delay_us(10);
-	I2C_write(regID & 0xFF);
+	I2C_write16(regID);
 	Timer_delay_us(10);
 	*regDat = I2C_read();
 	Timer_delay_us(10);

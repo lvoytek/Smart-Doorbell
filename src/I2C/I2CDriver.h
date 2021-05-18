@@ -32,9 +32,7 @@
 
 void		  I2C_init(int i2c_bus, unsigned char address);
 void		  I2C_shutdown();
-void		  I2C_write(unsigned char reg, unsigned char data);
-void		  I2C_write16(unsigned short reg, unsigned char data);
-unsigned char I2C_read(unsigned char reg);
-unsigned char I2C_read16(unsigned short reg);
+void		  I2C_write(unsigned char address, const unsigned char * data, unsigned char size);
+unsigned char I2C_read();
 
 #endif

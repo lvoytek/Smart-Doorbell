@@ -38,6 +38,8 @@
 #include "ArduCAM.h"
 #include "ov5642_regs.h"
 
+const unsigned char camera_i2c_address = 0x78;
+
 void		  clearFIFOFlag();
 unsigned char readFIFO();
 void		  flushFIFO();
@@ -111,12 +113,10 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 		if(vid != 0x56 || pid != 0x42)
 		{
 			ERROR_PRINTLN("Camera I2C unavailable: vid = 0x%x, pid = 0x%x", vid, pid);
-			Timer_delay_ms(1000);
 		}
 		else
 		{
 			DEBUG_PRINTLN("Camera I2C online.");
-			break;
 		}
 	}
 
@@ -575,8 +575,12 @@ unsigned char busRead(int address)
  */
 void wrSensorReg8_8(int regID, int regDat)
 {
+	unsigned char camera_data[2];
+	camera_data[0] = regID & 0xFF;
+	camera_data[1] = regDat & 0xFF;
+
 	Timer_delay_us(10);
-	I2C_write(regID, regDat);
+	I2C_write(camera_i2c_address, camera_data, 2);
 	Timer_delay_us(10);
 }
 
@@ -611,7 +615,9 @@ void wrSensorRegs8_8(const struct sensor_reg * reglist)
 void rdSensorReg8_8(unsigned char regID, unsigned char * regDat)
 {
 	Timer_delay_us(10);
-	*regDat = I2C_read(regID);
+	I2C_write(camera_i2c_address, &regID, 1);
+	Timer_delay_us(10);
+	*regDat = I2C_read();
 	Timer_delay_us(10);
 }
 
@@ -622,8 +628,13 @@ void rdSensorReg8_8(unsigned char regID, unsigned char * regDat)
  */
 void wrSensorReg16_8(int regID, int regDat)
 {
+	unsigned char camera_data[3];
+	camera_data[0] = (regID >> 8) & 0xFF;
+	camera_data[1] = regID & 0xFF;
+	camera_data[2] = regDat & 0xFF;
+
 	Timer_delay_us(10);
-	I2C_write16(regID, regDat);
+	I2C_write(camera_i2c_address, camera_data, 3);
 	Timer_delay_us(10);
 }
 
@@ -657,8 +668,14 @@ void wrSensorRegs16_8(const struct sensor_reg reglist[])
  */
 void rdSensorReg16_8(unsigned int regID, unsigned char * regDat)
 {
+	unsigned char camera_data[2];
+	camera_data[0] = (regID >> 8) & 0xFF;
+	camera_data[1] = regID & 0xFF;
+
 	Timer_delay_us(10);
-	*regDat = I2C_read16(regID);
+	I2C_write(camera_i2c_address, camera_data, 2);
+	Timer_delay_us(10);
+	*regDat = I2C_read();
 	Timer_delay_us(10);
 }
 

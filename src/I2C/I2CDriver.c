@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -86,7 +87,7 @@ void I2C_write(const unsigned char * data, unsigned char size)
 	}
 
 	int err = write(i2c_file, data, size);
-	if(err < 0) { ERROR_PRINTLN("I2C Write Failed: return %d", err); }
+	if(err < 0) { ERROR_PRINTLN("I2C Write Failed: return %d", errno); }
 }
 
 /**
@@ -106,7 +107,7 @@ unsigned char I2C_read()
 
 	if(read_out < 0)
 	{
-		ERROR_PRINTLN("I2C Read failed: return %d", read_out);
+		ERROR_PRINTLN("I2C Read failed: return %d", errno);
 		return 0;
 	}
 

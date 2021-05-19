@@ -33,7 +33,6 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
-#include <i2c/smbus.h>
 
 #include "Debug.h"
 
@@ -78,7 +77,7 @@ void I2C_shutdown()
  * @param data The data to write to the device
  * @param size The number of bytes to send to the device
  */
-void I2C_write(unsigned char address, const unsigned char * data, unsigned char size)
+void I2C_write(const unsigned char * data, unsigned char size)
 {
 	if(i2c_file < 0)
 	{
@@ -86,8 +85,8 @@ void I2C_write(unsigned char address, const unsigned char * data, unsigned char 
 		return;
 	}
 
-	int err = i2c_smbus_write_block_data(i2c_file, address, size, data);
-	if(err < 0) { ERROR_PRINTLN("I2C Write Failed: Address - 0x%hx, return %d", address, err); }
+	int err = write(i2c_file, data, size);
+	if(err < 0) { ERROR_PRINTLN("I2C Write Failed: return %d", err); }
 }
 
 /**
@@ -102,11 +101,12 @@ unsigned char I2C_read()
 		return 0;
 	}
 
-	int read_val = i2c_smbus_read_byte(i2c_file);
+	unsigned char read_val;
+	int			  read_out = read(i2c_file, &read_val, 1);
 
-	if(read_val < 0)
+	if(read_out < 0)
 	{
-		ERROR_PRINTLN("I2C Read failed: return %d", read_val);
+		ERROR_PRINTLN("I2C Read failed: return %d", read_out);
 		return 0;
 	}
 

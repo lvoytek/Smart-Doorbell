@@ -32,7 +32,7 @@
 
 void		  I2C_init(int i2c_bus, unsigned char address);
 void		  I2C_shutdown();
-void		  I2C_write(unsigned char address, const unsigned char * data, unsigned char size);
+void		  I2C_write(const unsigned char * data, unsigned char size);
 unsigned char I2C_read();
 
 #endif

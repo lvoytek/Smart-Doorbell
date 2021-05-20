@@ -101,6 +101,7 @@ install:
 	install -m 644 $(OUTDIR)/libCamera.so $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(OUTDIR)/libSPI.so $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(OUTDIR)/libI2C.so $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 $(OUTDIR)/libButton.so $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(OUTDIR)/libGPIO.so $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(OUTDIR)/libTimer.so $(DESTDIR)$(PREFIX)/lib/
 	install -d $(DESTDIR)$(PREFIX)/include/
@@ -108,6 +109,7 @@ install:
 	install -m 644 $(OUTDIR)/include/SPIDriver.h $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(OUTDIR)/include/Camera.h $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(OUTDIR)/include/I2CDriver.h $(DESTDIR)$(PREFIX)/include/
+	install -m 644 $(OUTDIR)/include/Button.h $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(OUTDIR)/include/GPIODriver.h $(DESTDIR)$(PREFIX)/include/
 	install -m 644 $(OUTDIR)/include/Timer.h $(DESTDIR)$(PREFIX)/include/
 	install -d $(DESTDIR)$(PREFIX)/bin/

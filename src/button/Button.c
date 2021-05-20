@@ -65,7 +65,7 @@ void Button_wait_for_press(PIN button_pin)
 	}
 
 	char value_buffer[8];
-	int	 current_level;
+	int	 current_level = -1;
 
 	// Get the initial input value
 	lseek(pin_value_file, 0, SEEK_SET);

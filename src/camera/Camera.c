@@ -127,6 +127,7 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 
 	if(format == IMG_JPEG)
 	{
+		DEBUG_PRINTLN("Initializing JPEG Format");
 		wrSensorRegs16_8(OV5642_JPEG_Capture_QSXGA);
 		wrSensorRegs16_8(ov5642_320x240);
 		wrSensorReg16_8(0x3818, 0xa8);
@@ -136,6 +137,7 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 	}
 	else
 	{
+		DEBUG_PRINTLN("Initializing BMP Format");
 		unsigned char reg_val;
 		wrSensorReg16_8(0x4740, 0x21);
 		wrSensorReg16_8(0x501e, 0x2a);
@@ -156,6 +158,7 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
  */
 void Camera_shutdown()
 {
+	DEBUG_PRINTLN("Shutting down camera");
 	I2C_shutdown();
 	SPI_shutdown();
 }
@@ -175,24 +178,31 @@ void Camera_set_resolution(RESOLUTION res)
 	switch(res)
 	{
 		case RES_320x240:
+			DEBUG_PRINTLN("Setting resolution to 320x240");
 			wrSensorRegs16_8(ov5642_320x240);
 			break;
 		case RES_640x480:
+			DEBUG_PRINTLN("Setting resolution to 640x480");
 			wrSensorRegs16_8(ov5642_640x480);
 			break;
 		case RES_1024x768:
+			DEBUG_PRINTLN("Setting resolution to 1024x768");
 			wrSensorRegs16_8(ov5642_1024x768);
 			break;
 		case RES_1280x960:
+			DEBUG_PRINTLN("Setting resolution to 1280x960");
 			wrSensorRegs16_8(ov5642_1280x960);
 			break;
 		case RES_1600x1200:
+			DEBUG_PRINTLN("Setting resolution to 1600x1200");
 			wrSensorRegs16_8(ov5642_1600x1200);
 			break;
 		case RES_2048x1536:
+			DEBUG_PRINTLN("Setting resolution to 2048x1536");
 			wrSensorRegs16_8(ov5642_2048x1536);
 			break;
 		case RES_2592x1944:
+			DEBUG_PRINTLN("Setting resolution to 2592x1944");
 			wrSensorRegs16_8(ov5642_2592x1944);
 			break;
 		default:
@@ -466,12 +476,18 @@ void Camera_save_capture_to_file(const char * filename)
 	fwrite(read_buffer, sizeof(char), current_jpeg_buffer_size, output_file);
 
 	if(fclose(output_file) < 0) { ERROR_PRINTLN("Failed to close the image file"); }
+
+	DEBUG_PRINTLN("Saved last capture to file: %50s", filename);
 }
 
 /**
  * Start capturing data on the camera
  */
-void Camera_start_capture() { writeRegister(ARDUCHIP_FIFO, FIFO_START_MASK); }
+void Camera_start_capture()
+{
+	DEBUG_PRINTLN("Starting image capture");
+	writeRegister(ARDUCHIP_FIFO, FIFO_START_MASK);
+}
 
 /**
  * Clear the flag marking new data in the camera FIFO queue
@@ -487,7 +503,11 @@ unsigned char readFIFO() { return busRead(SINGLE_FIFO_READ); }
 /**
  * Flush out the current data in the camera's FIFO queue
  */
-void flushFIFO() { writeRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK); }
+void flushFIFO()
+{
+	DEBUG_PRINTLN("Flushing FIFO");
+	writeRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
+}
 
 /**
  * Read the current size of the camera's SPI FIFO queue
@@ -503,7 +523,11 @@ unsigned int readFIFOLength()
 /**
  * Set the camera's SPI FIFO queue to burst mode
  */
-void setFIFOBurst() { SPI_transfer(BURST_FIFO_READ); }
+void setFIFOBurst()
+{
+	DEBUG_PRINTLN("Starting a FIFO burst read");
+	SPI_transfer(BURST_FIFO_READ);
+}
 
 /**
  * Read a byte from a camera register

@@ -40,7 +40,7 @@ int main(int argc, char * argv[])
 	pthread_t camera_thread;
 	pthread_create(&camera_thread, NULL, camera_thread_handler, NULL);
 
-	sleep(120);
+	sleep(25);
 	pthread_kill(camera_thread, 0);
 }
 

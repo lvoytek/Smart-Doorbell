@@ -26,7 +26,14 @@
  * This module controls debounce GPIO button inputs from a given pin
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <poll.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "GPIODriver.h"
+
+#include "Debug.h"
 
 #include "Button.h"
 
@@ -34,10 +41,45 @@
  * Initialize a button for reading
  * @param button_pin The GPIO pin number that the button is attached to
  */
-void Button_init(PIN button_pin) {}
+void Button_init(PIN button_pin)
+{
+	GPIO_init(button_pin);
+	GPIO_pin_mode(button_pin, PIN_MODE_INPUT);
+}
 
 /**
  * Wait for a button press then return
  * @param button_pin The GPIO pin number that the button is attached to
  */
-void Button_wait_for_press(PIN button_pin) {}
+void Button_wait_for_press(PIN button_pin)
+{
+	// Open pin value file
+	int pin_value_file;
+	int err = GPIO_get_pin_value_file_pointer(button_pin, &pin_value_file);
+
+	if(err < 0)
+	{
+		ERROR_PRINTLN("GPIO pin value file failed to open, cannot wait for button press");
+		return;
+	}
+
+	char value_buffer[8];
+
+	// Create a poll
+	struct pollfd pfd;
+	pfd.fd	   = pin_value_file;
+	pfd.events = POLLPRI;
+
+	// Consume prior interrupt
+	lseek(pin_value_file, 0, SEEK_SET);
+	read(pin_value_file, value_buffer, sizeof(value_buffer));
+
+	// Wait for a change
+	poll(&pfd, 1, -1);
+
+	// Catch a change in value
+	lseek(pin_value_file, 0, SEEK_SET);
+	read(pin_value_file, value_buffer, sizeof(value_buffer));
+
+	close(pin_value_file);
+}

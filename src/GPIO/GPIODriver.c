@@ -165,3 +165,25 @@ GPIO_LEVEL GPIO_digital_read(PIN pin)
 			return GPIO_LEVEL_INVALID;
 	}
 }
+
+/**
+ * Get a pointer to the file that states the digital value of a GPIO pin for polling
+ * @param pin the gpio pin number
+ * @param[out] fp the file pointer output
+ * @return 0 on success or the error value when attempting to open the file
+ */
+int GPIO_get_pin_value_file_pointer(PIN pin, int * fp)
+{
+	char gpio_value_filename[35];
+	snprintf(gpio_value_filename, 34, "%s%d/value", GPIO_DIRECTORY_PREFIX, pin);
+
+	int gpio_value_file = open(gpio_value_filename, O_RDONLY);
+	if(gpio_value_file < 0)
+	{
+		ERROR_PRINTLN("Unable to open GPIO value get file");
+		return gpio_value_file;
+	}
+
+	*fp = gpio_value_file;
+	return 0;
+}

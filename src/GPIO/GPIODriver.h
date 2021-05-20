@@ -50,5 +50,6 @@ void	   GPIO_init(PIN pin);
 void	   GPIO_pin_mode(PIN pin, PIN_MODE mode);
 void	   GPIO_digital_write(PIN pin, GPIO_LEVEL val);
 GPIO_LEVEL GPIO_digital_read(PIN pin);
+int		   GPIO_get_pin_value_file_pointer(PIN pin, int * fp);
 
 #endif

@@ -41,9 +41,6 @@ int main(int argc, char * argv[])
 {
 	pthread_t camera_thread;
 	pthread_create(&camera_thread, NULL, camera_thread_handler, NULL);
-
-	sleep(25);
-	pthread_kill(camera_thread, 0);
 }
 
 /**
@@ -54,6 +51,9 @@ int main(int argc, char * argv[])
 void * camera_thread_handler(void * arg)
 {
 	Camera_init(2, 1, 0);
+	Button_init(doorbell_button_gpio);
+	Button_wait_for_press(doorbell_button_gpio);
+
 	Camera_single_capture();
 	Camera_shutdown();
 

@@ -28,10 +28,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <poll.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "GPIODriver.h"
+#include "Timer.h"
 
 #include "Debug.h"
 
@@ -65,33 +65,46 @@ void Button_wait_for_press(PIN button_pin)
 	}
 
 	char value_buffer[8];
+	int	 current_level;
 
-	// Create a poll
-	struct pollfd pfd;
-	pfd.fd	   = pin_value_file;
-	pfd.events = POLLPRI | POLLERR;
-
-	// Consume prior interrupt
+	// Get the initial input value
 	lseek(pin_value_file, 0, SEEK_SET);
 	err = read(pin_value_file, value_buffer, sizeof(value_buffer));
 
 	if(err < 0) { ERROR_PRINTLN("Unable to read value file"); }
 	else
 	{
-		DEBUG_PRINTLN("Waiting for button press, current state is %s", value_buffer);
+		current_level = value_buffer[0] - '0';
+
+		if(current_level == 0 || current_level == 1)
+		{
+			DEBUG_PRINTLN("Waiting for button press, current state is %d", current_level);
+		}
+		else
+		{
+			ERROR_PRINTLN("Initial pin value of %d is invalid", current_level);
+		}
 	}
 
-	// Wait for a change
-	poll(&pfd, 1, -1);
-
-	// Catch a change in value
-	lseek(pin_value_file, 0, SEEK_SET);
-	err = read(pin_value_file, value_buffer, sizeof(value_buffer));
-
-	if(err < 0) { ERROR_PRINTLN("Unable to read value file"); }
-	else
+	while(1)
 	{
-		DEBUG_PRINTLN("Button Pressed, changed to %s", value_buffer);
+		// Check for change in value
+		lseek(pin_value_file, 0, SEEK_SET);
+		err = read(pin_value_file, value_buffer, sizeof(value_buffer));
+
+		if(err < 0) { ERROR_PRINTLN("Unable to read value file"); }
+		else
+		{
+			int new_level = value_buffer[0] - '0';
+
+			if(new_level != current_level)
+			{
+				DEBUG_PRINTLN("Button Pressed, changed to %d", new_level);
+				break;
+			}
+		}
+
+		Timer_delay_ms(20);
 	}
 
 	close(pin_value_file);

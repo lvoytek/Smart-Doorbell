@@ -84,6 +84,8 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 	I2C_init(i2c_bus, camera_i2c_address);
 	SPI_init(spi_bus, spi_cs, 8000000);
 
+	Camera_reset_firmware();
+
 	// Check for Camera until SPI exists
 	while(1)
 	{
@@ -121,8 +123,6 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 			break;
 		}
 	}
-
-	Camera_reset_firmware();
 
 	wrSensorReg16_8(0x3008, 0x80);
 	wrSensorRegs16_8(OV5642_QVGA_Preview);

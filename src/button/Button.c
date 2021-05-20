@@ -45,6 +45,7 @@ void Button_init(PIN button_pin)
 {
 	GPIO_init(button_pin);
 	GPIO_pin_mode(button_pin, PIN_MODE_INPUT);
+	DEBUG_PRINTLN("Initialized button on GPIO %d", button_pin);
 }
 
 /**
@@ -68,13 +69,17 @@ void Button_wait_for_press(PIN button_pin)
 	// Create a poll
 	struct pollfd pfd;
 	pfd.fd	   = pin_value_file;
-	pfd.events = POLLPRI;
+	pfd.events = POLLPRI | POLLERR;
 
 	// Consume prior interrupt
 	lseek(pin_value_file, 0, SEEK_SET);
 	err = read(pin_value_file, value_buffer, sizeof(value_buffer));
 
 	if(err < 0) { ERROR_PRINTLN("Unable to read value file"); }
+	else
+	{
+		DEBUG_PRINTLN("Waiting for button press, current state is %s", value_buffer);
+	}
 
 	// Wait for a change
 	poll(&pfd, 1, -1);
@@ -84,6 +89,10 @@ void Button_wait_for_press(PIN button_pin)
 	err = read(pin_value_file, value_buffer, sizeof(value_buffer));
 
 	if(err < 0) { ERROR_PRINTLN("Unable to read value file"); }
+	else
+	{
+		DEBUG_PRINTLN("Button Pressed, changed to %s", value_buffer);
+	}
 
 	close(pin_value_file);
 }

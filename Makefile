@@ -36,7 +36,7 @@ OUTDIR ?= build
 all:$(OUTDIR)/smart-doorbell
 
 # Smart Doorbell CLI app creation
-$(OUTDIR)/smart-doorbell:$(OUTDIR)/libCamera.so $(OUTDIR)/include/Camera.h
+$(OUTDIR)/smart-doorbell:$(OUTDIR)/libCamera.so $(OUTDIR)/include/Camera.h $(OUTDIR)/libButton.so $(OUTDIR)/include/Button.h
 	$(CC) -Wl,-R -Wl,$(CURDIR)/$(OUTDIR) $(CCFLAGS) -pthread -D$(DEFINES) -I$(OUTDIR)/include -L$(OUTDIR) -lCamera -lTimer -lGPIO -li2c -lI2C -lSPI -I$(OUTDIR)/include -o $@ src/main/SmartDoorbellCLI.c
 
 # ArduCAM Library
@@ -64,6 +64,14 @@ $(OUTDIR)/libI2C.so:$(OUTDIR)/include/Debug.h src/I2C
 
 $(OUTDIR)/include/I2CDriver.h:src/I2C
 	cp src/I2C/I2CDriver.h $(OUTDIR)/include/
+
+# Button Library
+$(OUTDIR)/libButton.so:$(OUTDIR)/include/Debug.h $(OUTDIR)/include/Timer.h $(OUTDIR)/libGPIO.so src/button
+	$(CC) $(LIBARGS) $(CCFLAGS) -D$(DEFINES) -L$(OUTDIR) -lTimer -lGPIO -I$(OUTDIR)/include src/button/Button.c -o $(OUTDIR)/Button.o
+	$(CC) -shared -o $@ $(OUTDIR)/Button.o
+
+$(OUTDIR)/include/Button.h:src/button
+	cp src/button/Button.h $(OUTDIR)/include/
 
 # GPIO Library
 $(OUTDIR)/libGPIO.so:$(OUTDIR)/include/Debug.h src/GPIO

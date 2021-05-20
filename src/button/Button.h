@@ -21,43 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * SmartDoorbellCLI
+ * Button
  *
- * This file contains the main entry and setup for the CLI version of the Smart
- * Doorbell application
+ * This module controls debounce GPIO button inputs from a given pin
  */
 
-#include <pthread.h>
-#include <signal.h>
-#include <unistd.h>
+#ifndef BUTTON_H
+#define BUTTON_H
 
-#include <Camera.h>
-#include <Button.h>
+#include "GPIODriver.h"
 
-const int doorbell_button_gpio = 86;
-void *	  camera_thread_handler(void * arg);
+void Button_init(PIN button_pin);
+void Button_wait_for_press(PIN button_pin);
 
-int main(int argc, char * argv[])
-{
-	pthread_t camera_thread;
-	pthread_create(&camera_thread, NULL, camera_thread_handler, NULL);
-
-	sleep(25);
-	pthread_kill(camera_thread, 0);
-}
-
-/**
- * Function for handling use of camera on its own thread
- * @param arg Unused
- * @return Unused
- */
-void * camera_thread_handler(void * arg)
-{
-	Camera_init(2, 1, 0);
-	Camera_single_capture();
-	Camera_shutdown();
-
-	Camera_save_capture_to_file("image.jpg");
-
-	return 0;
-}
+#endif

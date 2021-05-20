@@ -72,14 +72,18 @@ void Button_wait_for_press(PIN button_pin)
 
 	// Consume prior interrupt
 	lseek(pin_value_file, 0, SEEK_SET);
-	read(pin_value_file, value_buffer, sizeof(value_buffer));
+	err = read(pin_value_file, value_buffer, sizeof(value_buffer));
+
+	if(err < 0) { ERROR_PRINTLN("Unable to read value file"); }
 
 	// Wait for a change
 	poll(&pfd, 1, -1);
 
 	// Catch a change in value
 	lseek(pin_value_file, 0, SEEK_SET);
-	read(pin_value_file, value_buffer, sizeof(value_buffer));
+	err = read(pin_value_file, value_buffer, sizeof(value_buffer));
+
+	if(err < 0) { ERROR_PRINTLN("Unable to read value file"); }
 
 	close(pin_value_file);
 }

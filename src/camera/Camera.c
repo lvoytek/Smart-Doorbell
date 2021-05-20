@@ -457,6 +457,7 @@ void Camera_single_capture()
 	setFIFOBurst();
 
 	while((count--) > 0) { read_buffer[i++] = SPI_transfer(0); }
+	DEBUG_PRINTLN("Single image captured, size: %d bytes", current_jpeg_buffer_size);
 }
 
 /**

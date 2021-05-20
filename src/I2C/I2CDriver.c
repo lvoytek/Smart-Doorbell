@@ -47,7 +47,7 @@ char	   i2c_filename[20];
  * @param i2c_bus The I2C bus number
  * @param address The slave device address
  */
-void I2C_init(int i2c_bus)
+void I2C_init(int i2c_bus, unsigned char address)
 {
 	snprintf(i2c_filename, 19, "/dev/i2c-%d", i2c_bus);
 	i2c_file = open(i2c_filename, O_RDWR);
@@ -56,6 +56,11 @@ void I2C_init(int i2c_bus)
 	{
 		ERROR_PRINTLN("%19s does not exist.", i2c_filename);
 		return;
+	}
+
+	if(ioctl(i2c_file, I2C_SLAVE, address) < 0)
+	{
+		ERROR_PRINTLN("Cannot change I2C slave address.");
 	}
 }
 
@@ -73,17 +78,12 @@ void I2C_shutdown()
  * @param data The data to write to the device
  * @param size The number of bytes to send to the device
  */
-void I2C_write(unsigned char address, const unsigned char * data, unsigned char size)
+void I2C_write(const unsigned char * data, unsigned char size)
 {
 	if(i2c_file < 0)
 	{
 		ERROR_PRINTLN("I2C unavailable");
 		return;
-	}
-
-	if(ioctl(i2c_file, I2C_SLAVE, address) < 0)
-	{
-		ERROR_PRINTLN("Cannot change I2C slave address.");
 	}
 
 	int err = write(i2c_file, data, size);
@@ -102,10 +102,14 @@ unsigned char I2C_read()
 		return 0;
 	}
 
-	unsigned char read_val = 0;
+	unsigned char read_val;
 	int			  read_out = read(i2c_file, &read_val, 1);
 
-	if(read_out < 0) { ERROR_PRINTLN("I2C Read failed: return %d", errno); }
+	if(read_out < 0)
+	{
+		ERROR_PRINTLN("I2C Read failed: return %d", errno);
+		return 0;
+	}
 
 	return read_val;
 }

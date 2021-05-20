@@ -152,7 +152,13 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 		wrSensorReg16_8(0x3621, reg_val & 0xdf);
 	}
 
+	setBit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
 	Camera_set_resolution(RES_320x240);
+
+	Timer_delay_ms(1000);
+
+	clearFIFOFlag();
+	writeRegister(ARDUCHIP_FRAMES, 0x00);
 }
 
 /**
@@ -438,8 +444,6 @@ void Camera_reset_firmware()
 	Timer_delay_ms(100);
 	writeRegister(0x07, 0x00);
 	Timer_delay_ms(100);
-	writeRegister(ARDUCHIP_FRAMES, 0x00);
-	setBit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
 }
 
 /**

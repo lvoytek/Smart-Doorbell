@@ -474,6 +474,7 @@ void Camera_save_capture_to_file(const char * filename)
 	}
 
 	fwrite(read_buffer, sizeof(char), current_jpeg_buffer_size, output_file);
+	fflush(output_file);
 
 	if(fclose(output_file) < 0) { ERROR_PRINTLN("Failed to close the image file"); }
 

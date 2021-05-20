@@ -41,6 +41,7 @@ int main(int argc, char * argv[])
 {
 	pthread_t camera_thread;
 	pthread_create(&camera_thread, NULL, camera_thread_handler, NULL);
+	pthread_join(camera_thread, NULL);
 }
 
 /**

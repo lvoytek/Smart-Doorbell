@@ -134,6 +134,7 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 		wrSensorReg16_8(0x3621, 0x10);
 		wrSensorReg16_8(0x3801, 0xb0);
 		wrSensorReg16_8(0x4407, 0x04);
+		setBit(ARDUCHIP_TIM, VSYNC_LEVEL_MASK);
 	}
 	else
 	{

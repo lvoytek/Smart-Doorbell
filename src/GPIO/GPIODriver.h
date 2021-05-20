@@ -30,17 +30,25 @@
 #ifndef GPIODRIVER_H
 #define GPIODRIVER_H
 
-enum GPIO_LEVEL
+typedef enum
 {
-	GPIO_LOW = 0,
-	GPIO_HIGH
-};
+	GPIO_LOW  = 0,
+	GPIO_HIGH = 1,
+	GPIO_LEVEL_INVALID
+} GPIO_LEVEL;
+
+typedef enum
+{
+	PIN_MODE_INPUT,
+	PIN_MODE_OUTPUT,
+	PIN_MODE_INVALID
+} PIN_MODE;
 
 typedef int PIN;
 
-void GPIO_init();
-void GPIO_pin_mode(PIN pin, unsigned int mode);
-void GPIO_digital_write(PIN pin, int val);
-int	 GPIO_digital_read(PIN pin);
+void	   GPIO_init(PIN pin);
+void	   GPIO_pin_mode(PIN pin, PIN_MODE mode);
+void	   GPIO_digital_write(PIN pin, GPIO_LEVEL val);
+GPIO_LEVEL GPIO_digital_read(PIN pin);
 
 #endif

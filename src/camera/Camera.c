@@ -452,6 +452,7 @@ void Camera_reset_firmware()
 void Camera_single_capture()
 {
 	flushFIFO();
+	clearFIFOFlag();
 	Camera_start_capture();
 
 	while(!getBit(ARDUCHIP_TRIG, CAP_DONE_MASK)) { Timer_delay_us(5); }

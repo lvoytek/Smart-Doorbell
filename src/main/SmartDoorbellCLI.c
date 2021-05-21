@@ -39,35 +39,54 @@ const int doorbell_button_gpio	   = 86;
 const int doorbell_video_runtime_s = 30;
 
 void * camera_thread_handler(void * arg);
+void * doorbell_thread_handler(void * arg);
 
 int main(int argc, char * argv[])
 {
-	pthread_t camera_thread;
-	pthread_create(&camera_thread, NULL, camera_thread_handler, NULL);
-	pthread_join(camera_thread, NULL);
+	pthread_t doorbell_thread;
+
+	while(1)
+	{
+		pthread_create(&doorbell_thread, NULL, doorbell_thread_handler, NULL);
+		pthread_join(doorbell_thread, NULL);
+	}
 }
 
 /**
- * Function for handling use of camera on its own thread
+ * Function for handling use of doorbell on its own thread
+ * @param arg Unused
+ * @return Unused
+ */
+void * doorbell_thread_handler(void * arg)
+{
+	pthread_t camera_thread;
+
+	Camera_init(2, 1, 0);
+	Button_init(doorbell_button_gpio);
+	Button_wait_for_press(doorbell_button_gpio);
+
+	// Run doorbell video for 30 seconds
+	pthread_create(&camera_thread, NULL, camera_thread_handler, NULL);
+	sleep(doorbell_video_runtime_s);
+	pthread_kill(camera_thread, 0);
+
+	Camera_shutdown();
+
+	return 0;
+}
+
+/**
+ * Function for handling use of camera video on its own thread
  * @param arg Unused
  * @return Unused
  */
 void * camera_thread_handler(void * arg)
 {
-	Camera_init(2, 1, 0);
-	Button_init(doorbell_button_gpio);
-	Button_wait_for_press(doorbell_button_gpio);
-
-	time_t start, current;
-	start = time(NULL);
-
-	do {
-		current = time(NULL);
+	while(1)
+	{
 		Camera_single_capture();
 		Camera_save_capture_to_file("image.jpg");
-	} while(difftime(start, current) < doorbell_video_runtime_s);
-
-	Camera_shutdown();
+	}
 
 	return 0;
 }

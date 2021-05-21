@@ -58,7 +58,7 @@ void * camera_thread_handler(void * arg)
 	Camera_single_capture();
 	Camera_shutdown();
 
-	Camera_save_capture_to_file("image.bmp");
+	Camera_save_capture_to_file("image.jpg");
 
 	return 0;
 }

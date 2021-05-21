@@ -79,7 +79,7 @@ int current_jpeg_buffer_size;
  */
 void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 {
-	format = IMG_BMP;
+	format = IMG_JPEG;
 
 	I2C_init(i2c_bus, camera_i2c_address);
 	SPI_init(spi_bus, spi_cs, 8000000);
@@ -456,6 +456,8 @@ void Camera_single_capture()
 	flushFIFO();
 	clearFIFOFlag();
 	Camera_start_capture();
+
+	Timer_delay_ms(500);
 
 	while(!getBit(ARDUCHIP_TRIG, CAP_DONE_MASK)) { Timer_delay_us(5); }
 

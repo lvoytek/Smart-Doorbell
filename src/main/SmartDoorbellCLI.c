@@ -64,9 +64,10 @@ void * camera_thread_handler(void * arg)
 	do {
 		current = time(NULL);
 		Camera_single_capture();
-		Camera_shutdown();
 		Camera_save_capture_to_file("image.jpg");
 	} while(difftime(start, current) < doorbell_video_runtime_s);
+
+	Camera_shutdown();
 
 	return 0;
 }

@@ -126,6 +126,7 @@ void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 
 	wrSensorReg16_8(0x3008, 0x80);
 	wrSensorRegs16_8(OV5642_QVGA_Preview);
+	Timer_delay_ms(100);
 
 	if(format == IMG_JPEG)
 	{

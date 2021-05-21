@@ -457,17 +457,13 @@ void Camera_single_capture()
 	clearFIFOFlag();
 	Camera_start_capture();
 
-	Timer_delay_ms(500);
-
 	while(!getBit(ARDUCHIP_TRIG, CAP_DONE_MASK)) { Timer_delay_us(5); }
 
 	int count				 = readFIFOLength();
 	current_jpeg_buffer_size = count;
 	int i					 = 0;
 
-	setFIFOBurst();
-
-	while((count--) > 0) { read_buffer[i++] = SPI_transfer(0); }
+	while((count--) > 0) { read_buffer[i++] = readFIFO(); }
 	DEBUG_PRINTLN("Single image captured, size: %d bytes", current_jpeg_buffer_size);
 }
 

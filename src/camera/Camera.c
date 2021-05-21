@@ -79,7 +79,7 @@ int current_jpeg_buffer_size;
  */
 void Camera_init(int i2c_bus, unsigned int spi_bus, unsigned int spi_cs)
 {
-	format = IMG_JPEG;
+	format = IMG_BMP;
 
 	I2C_init(i2c_bus, camera_i2c_address);
 	SPI_init(spi_bus, spi_cs, 8000000);

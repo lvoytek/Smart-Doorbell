@@ -30,12 +30,15 @@
 #include <pthread.h>
 #include <signal.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <Camera.h>
 #include <Button.h>
 
-const int doorbell_button_gpio = 86;
-void *	  camera_thread_handler(void * arg);
+const int doorbell_button_gpio	   = 86;
+const int doorbell_video_runtime_s = 30;
+
+void * camera_thread_handler(void * arg);
 
 int main(int argc, char * argv[])
 {
@@ -55,10 +58,15 @@ void * camera_thread_handler(void * arg)
 	Button_init(doorbell_button_gpio);
 	Button_wait_for_press(doorbell_button_gpio);
 
-	Camera_single_capture();
-	Camera_shutdown();
+	time_t start, current;
+	start = time(NULL);
 
-	Camera_save_capture_to_file("image.jpg");
+	do {
+		current = time(NULL);
+		Camera_single_capture();
+		Camera_shutdown();
+		Camera_save_capture_to_file("image.jpg");
+	} while(difftime(start, current) < doorbell_video_runtime_s);
 
 	return 0;
 }

@@ -31,12 +31,18 @@
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
+#include <string.h>
+#include <stdio.h>
 
 #include <Camera.h>
 #include <Button.h>
 
+#define SMART_DOORBELL_VERSION "1.00"
+
 const int doorbell_button_gpio	   = 86;
 const int doorbell_video_runtime_s = 30;
+
+char runonce = 0;
 
 void * camera_thread_handler(void * arg);
 void * doorbell_thread_handler(void * arg);
@@ -45,11 +51,39 @@ int main(int argc, char * argv[])
 {
 	pthread_t doorbell_thread;
 
-	while(1)
+	for(int i = 1; i < argc; i++)
 	{
+		// Exit application after one doorbell press and video feed
+		if(strncmp(argv[i], "-s", 2) == 0 || strncmp(argv[i], "--single", 8) == 0)
+		{
+			runonce = 1;
+			break;
+		}
+		// Show help menu
+		else if(strncmp(argv[i], "-h", 2) == 0 || strncmp(argv[i], "--help", 6) == 0)
+		{
+			printf(
+				"See the README file at https://github.com/lvoytek/Smart-Doorbell for setup "
+				"information\n"
+				"Options:\n"
+				"  -s, --single\t\t\tExit the application after the doorbell is pressed and the "
+				"video feed ends\n"
+				"  -h, --help\t\t\tDisplay this screen and exit\n"
+				"  -v, --version\t\tDisplay the software version number and exit\n");
+			return 0;
+		}
+		// Show version
+		else if(strncmp(argv[i], "-v", 2) == 0 || strncmp(argv[i], "--version", 9) == 0)
+		{
+			printf("Smart Doorbell version %s\n", SMART_DOORBELL_VERSION);
+			return 0;
+		}
+	}
+
+	do {
 		pthread_create(&doorbell_thread, NULL, doorbell_thread_handler, NULL);
 		pthread_join(doorbell_thread, NULL);
-	}
+	} while(runonce == 0);
 }
 
 /**

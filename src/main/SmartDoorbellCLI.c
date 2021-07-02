@@ -39,6 +39,8 @@
 #include <Camera.h>
 #include <Button.h>
 
+#include <Debug.h>
+
 #define SMART_DOORBELL_VERSION "1.00"
 
 static const int doorbell_button_gpio	  = 86;
@@ -49,6 +51,8 @@ static const unsigned int button_press_pause_max_ms = 1000;
 
 static bool runonce								= false;
 static bool add_random_delay_after_button_press = false;
+
+bool debug = false;
 
 static void * camera_thread_handler(void * arg);
 static void * doorbell_thread_handler(void * arg);
@@ -68,6 +72,11 @@ int main(int argc, char * argv[])
 		{
 			runonce = true;
 		}
+		// Add Debug printing
+		else if(strncmp(argv[i], "-d", 2) == 0 || strncmp(argv[i], "--debug", 7) == 0)
+		{
+			debug = true;
+		}
 		// Add random 100ms-1s pause after button press to simulate an attack on the application
 		else if(strncmp(argv[i], "-p", 2) == 0 || strncmp(argv[i], "--addpause", 10) == 0)
 		{
@@ -80,6 +89,7 @@ int main(int argc, char * argv[])
 				"See the README file at https://github.com/lvoytek/Smart-Doorbell for setup "
 				"information\n"
 				"Options:\n"
+				"  -d, --debug\t\tAdd debug printing while running the application\n"
 				"  -s, --single\t\tExit the application after the doorbell is pressed and "
 				"the video feed ends\n"
 				"  -p, --addpause\tAdd a random pause from 100ms to 1s to simulate an attack on "

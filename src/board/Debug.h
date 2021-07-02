@@ -29,29 +29,28 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#ifdef DEBUG
 #include <stdio.h>
+#include <stdbool.h>
 
-#define DEBUG_PRINTLN(...)   \
-	do {                     \
-		printf(__VA_ARGS__); \
-		printf("\n");        \
+extern bool debug;
+
+#define DEBUG_PRINTLN(...)       \
+	do {                         \
+		if(debug)                \
+		{                        \
+			printf(__VA_ARGS__); \
+			printf("\n");        \
+		}                        \
 	} while(0)
 
-#define ERROR_PRINTLN(...)            \
-	do {                              \
-		fprintf(stderr, "Error: ");   \
-		fprintf(stderr, __VA_ARGS__); \
-		fprintf(stderr, "\n");        \
+#define ERROR_PRINTLN(...)                \
+	do {                                  \
+		if(debug)                         \
+		{                                 \
+			fprintf(stderr, "Error: ");   \
+			fprintf(stderr, __VA_ARGS__); \
+			fprintf(stderr, "\n");        \
+		}                                 \
 	} while(0)
 
-#else
-#define DEBUG_PRINTLN(...) \
-	do {                   \
-	} while(0)
-
-#define ERROR_PRINTLN(...) \
-	do {                   \
-	} while(0)
-#endif
 #endif

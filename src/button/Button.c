@@ -52,7 +52,7 @@ void Button_init(PIN button_pin)
  * Wait for a button press then return
  * @param button_pin The GPIO pin number that the button is attached to
  */
-void Button_wait_for_press(PIN button_pin)
+void Button_wait_for_press(PIN button_pin, unsigned int post_press_pause_time_ms)
 {
 	// Open pin value file
 	int pin_value_file;
@@ -108,4 +108,6 @@ void Button_wait_for_press(PIN button_pin)
 	}
 
 	close(pin_value_file);
+
+	Timer_delay_ms(post_press_pause_time_ms);
 }

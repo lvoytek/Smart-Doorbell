@@ -33,31 +33,45 @@
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 #include <Camera.h>
 #include <Button.h>
 
 #define SMART_DOORBELL_VERSION "1.00"
 
-const int doorbell_button_gpio	   = 86;
-const int doorbell_video_runtime_s = 30;
+static const int doorbell_button_gpio	  = 86;
+static const int doorbell_video_runtime_s = 30;
 
-char runonce = 0;
+static const unsigned int button_press_pause_min_ms = 100;
+static const unsigned int button_press_pause_max_ms = 1000;
 
-void * camera_thread_handler(void * arg);
-void * doorbell_thread_handler(void * arg);
+static bool runonce								= false;
+static bool add_random_delay_after_button_press = false;
+
+static void * camera_thread_handler(void * arg);
+static void * doorbell_thread_handler(void * arg);
 
 int main(int argc, char * argv[])
 {
 	pthread_t doorbell_thread;
+
+	// Random seed based on current time
+	time_t t;
+	srand((unsigned) time(&t));
 
 	for(int i = 1; i < argc; i++)
 	{
 		// Exit application after one doorbell press and video feed
 		if(strncmp(argv[i], "-s", 2) == 0 || strncmp(argv[i], "--single", 8) == 0)
 		{
-			runonce = 1;
-			break;
+			runonce = true;
+		}
+		// Add random 100ms-1s pause after button press to simulate an attack on the application
+		else if(strncmp(argv[i], "-p", 2) == 0 || strncmp(argv[i], "--addpause", 10) == 0)
+		{
+			add_random_delay_after_button_press = true;
 		}
 		// Show help menu
 		else if(strncmp(argv[i], "-h", 2) == 0 || strncmp(argv[i], "--help", 6) == 0)
@@ -66,9 +80,11 @@ int main(int argc, char * argv[])
 				"See the README file at https://github.com/lvoytek/Smart-Doorbell for setup "
 				"information\n"
 				"Options:\n"
-				"  -s, --single\t\t\tExit the application after the doorbell is pressed and the "
-				"video feed ends\n"
-				"  -h, --help\t\t\tDisplay this screen and exit\n"
+				"  -s, --single\t\tExit the application after the doorbell is pressed and "
+				"the video feed ends\n"
+				"  -p, --addpause\tAdd a random pause from 100ms to 1s to simulate an attack on "
+				"the application after a button press\n"
+				"  -h, --help\t\tDisplay this screen and exit\n"
 				"  -v, --version\t\tDisplay the software version number and exit\n");
 			return 0;
 		}
@@ -83,7 +99,7 @@ int main(int argc, char * argv[])
 	do {
 		pthread_create(&doorbell_thread, NULL, doorbell_thread_handler, NULL);
 		pthread_join(doorbell_thread, NULL);
-	} while(runonce == 0);
+	} while(!runonce);
 }
 
 /**
@@ -91,13 +107,20 @@ int main(int argc, char * argv[])
  * @param arg Unused
  * @return Unused
  */
-void * doorbell_thread_handler(void * arg)
+static void * doorbell_thread_handler(void * arg)
 {
 	pthread_t camera_thread;
 
+	// Get random post-button pause time if needed
+	const unsigned int button_press_pause_time =
+		add_random_delay_after_button_press ?
+			  (rand() % (button_press_pause_max_ms - button_press_pause_min_ms) +
+			 button_press_pause_min_ms) :
+			  0;
+
 	Camera_init(2, 1, 0);
 	Button_init(doorbell_button_gpio);
-	Button_wait_for_press(doorbell_button_gpio);
+	Button_wait_for_press(doorbell_button_gpio, button_press_pause_time);
 
 	// Run doorbell video for 30 seconds
 	pthread_create(&camera_thread, NULL, camera_thread_handler, NULL);
@@ -114,7 +137,7 @@ void * doorbell_thread_handler(void * arg)
  * @param arg Unused
  * @return Unused
  */
-void * camera_thread_handler(void * arg)
+static void * camera_thread_handler(void * arg)
 {
 	while(1)
 	{

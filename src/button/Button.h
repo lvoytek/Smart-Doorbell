@@ -32,6 +32,6 @@
 #include "GPIODriver.h"
 
 void Button_init(PIN button_pin);
-void Button_wait_for_press(PIN button_pin);
+void Button_wait_for_press(PIN button_pin, unsigned int post_press_pause_time_ms);
 
 #endif

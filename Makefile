@@ -32,6 +32,8 @@ DEFINES ?= DEBUG
 
 OUTDIR ?= build
 
+CCFLAGS += "-O"
+
 .PHONY:all
 all:$(OUTDIR)/smart-doorbell
 
